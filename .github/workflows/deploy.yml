@@ -24,7 +24,7 @@ jobs:
         run: docker build -t mon-app:${{ github.sha }} .
 
       - name: Stop ancien container si existe
-        run: docker rm -f mon-app || true
+        run: docker rm -f mon-appli || true
 
       - name: Lancer le nouveau container
         run: docker run -d -p 3000:3000 --name mon-appli mon-app:${{ github.sha }}
