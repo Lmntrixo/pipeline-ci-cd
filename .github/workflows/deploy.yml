@@ -1,0 +1,30 @@
+name: CD sans kybernetes
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verifier aue app.js existe et est valide
+        run: node --check app.js
+
+
+  deploy:
+    needs: test
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t mon-app:${{ github.sha }} .
+
+      - name: Stop ancien container si existe
+        run: docker rm -f mon-app || true
+
+      - name: Lancer le nouveau container
+        run: docker run -d -p 3000:3000 --name mon-appli mon-app:${{ github.sha }}
