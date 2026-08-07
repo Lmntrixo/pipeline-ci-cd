@@ -39,8 +39,4 @@ jobs:
       - name: deployer sur kubernetes( kind)
         run: kubectl set image deployment/mon-app mon-app=evanslmntrix/mon-app:${{ github.sha }}
 
-      - name: Stop ancien container si existe
-        run: docker rm -f mon-appli || true
 
-      - name: Lancer le nouveau container
-        run: docker run -d -p 3000:3000 --name mon-appli mon-app:${{ github.sha }}
