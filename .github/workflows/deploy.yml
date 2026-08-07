@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verifier aue app.js existe et est valide
+      - name: Verifier que app.js existe et est bien valide
         run: node --check app.js
 
   build-and-push:
