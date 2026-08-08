@@ -13,30 +13,20 @@ jobs:
       - name: Verifier que app.js existe et est bien valide
         run: node --check app.js
 
-  build-and-push:
+  deploy:
     needs: test
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build image
+        run: docker build -t mon-app:${{ github.sha }} .
 
-      - name: Build and push
-        run: |
-          docker build -t evanslmntrix/mon-app:${{ github.sha }} .
-          docker push evanslmntrix/mon-app:${{ github.sha }}
+      - name: Stop ancien container si existant
+        run: docker rm -f mon-app || true
 
-  deploy:
-    needs: build-and-push
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
+      - name: lancer le nouveau container
+        run: docker run -d -p 3000:3000 --name mon-app mon-app:${{ github.sha }}
 
-      - name: deployer sur kubernetes( kind)
-        run: kubectl set image deployment/mon-app mon-app=evanslmntrix/mon-app:${{ github.sha }}
 
 
